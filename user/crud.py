@@ -52,7 +52,11 @@ def get_data_hash(password: str):
 
 async def create_user_data(db: Session, request, userdata: UserBase):
     # ✅ Check if email already exists
-    existing_user = db.query(UserMaster).filter(UserMaster.email == userdata.email).first()
+    existing_user = db.query(UserMaster).filter(UserMaster.email == userdata.email).first() 
+
+    all_admin_user = db.query(UserMaster).filter(UserMaster.is_admin == True).all() 
+
+    
     print("Existing User: 11111111111111111111111111111", existing_user)
     if existing_user:
         return {"status": "failed", "message": "Email already exists"}

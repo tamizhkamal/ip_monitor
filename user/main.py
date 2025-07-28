@@ -17,7 +17,7 @@ from fastapi import Request
 
 router = APIRouter(tags=['User'])  
 
-@router.post("/AddUser", tags=["User"])
+@router.get("/AddUser", tags=["User"])
 async def AddUser(userdata: Userschema.UserBase,request: Request, db: Session = Depends(get_db)):
     final_dict = await create_user_data(db,request, userdata)
     print("result", final_dict)
@@ -31,6 +31,27 @@ async def test_mail(userdata: Userschema.TestEmailSchema, db: Session = Depends(
 
 @router.get("/all_user_data", response_model=UserResponse, tags=['User'])
 async def all_user_data(db: Session = Depends(get_db)):
+    users = db.query(UserMaster).all()
+
+    user_data = [
+        UserOut(
+            username=user.username,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            country_code=user.country_code,
+            country=user.country,
+            email=user.email,
+            contact_number=user.contact_number,
+            is_admin=user.is_admin,
+        )
+        for user in users
+    ]
+
+    return UserResponse(data=user_data)
+
+
+@router.get("/all_data", response_model=UserResponse, tags=['User'])
+async def all_data(db: Session = Depends(get_db)):
     users = db.query(UserMaster).all()
 
     user_data = [
